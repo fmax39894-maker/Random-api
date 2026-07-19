@@ -21,7 +21,6 @@ export default async function handler(req, res) {
 
   const random = images[Math.floor(Math.random() * images.length)];
 
-  return res.status(200).json({
-    image: random.download_url
+  return res.redirect(302, random.download_url);
   });
 }
