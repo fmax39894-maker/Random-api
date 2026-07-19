@@ -2,25 +2,41 @@ export default async function handler(req, res) {
   const OWNER = "fmax39894-maker";
   const REPO = "Random-api";
 
-  const response = await fetch(
-    `https://api.github.com/repos/${OWNER}/${REPO}/contents`
-  );
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/contents`
+    );
 
-  const files = await response.json();
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: "Failed to fetch repository contents"
+      });
+    }
 
-  const images = files.filter(file =>
-    file.type === "file" &&
-    /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name)
-  );
+    const files = await response.json();
 
-  if (images.length === 0) {
-    return res.status(404).json({
-      error: "No images found"
+    const images = files.filter(file =>
+      file.type === "file" &&
+      /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name)
+    );
+
+    if (images.length === 0) {
+      return res.status(404).json({
+        error: "No images found"
+      });
+    }
+
+    const random = images[Math.floor(Math.random() * images.length)];
+
+    res.writeHead(302, {
+      Location: random.download_url
+    });
+
+    res.end();
+
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
     });
   }
-
-  const random = images[Math.floor(Math.random() * images.length)];
-
-  return res.redirect(302, random.download_url);
-  });
 }
