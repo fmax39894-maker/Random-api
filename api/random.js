@@ -1,16 +1,21 @@
 export default async function handler(req, res) {
-  try {
-    const OWNER = "fmax39894-maker";
-    const REPO = "Tele-botx";
+  const OWNER = "fmax39894-maker";
+  const REPO = "Tele-botx";
 
+  try {
     const response = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents`
+      `https://api.github.com/repos/${OWNER}/${REPO}/contents`,
+      {
+        headers: {
+          "User-Agent": "Vercel"
+        }
+      }
     );
 
     const data = await response.json();
 
-    if (!Array.isArray(data)) {
-      return res.status(500).json(data);
+    if (!response.ok) {
+      return res.status(response.status).json(data);
     }
 
     const images = data.filter(file =>
@@ -25,12 +30,14 @@ export default async function handler(req, res) {
 
     const random = images[Math.floor(Math.random() * images.length)];
 
-    return res.redirect(302, random.download_url);
+    return res.status(200).json({
+      image: random.download_url,
+      filename: random.name
+    });
 
-  } catch (err) {
+  } catch (e) {
     return res.status(500).json({
-      error: err.message,
-      stack: err.stack
+      error: e.message
     });
   }
 }
