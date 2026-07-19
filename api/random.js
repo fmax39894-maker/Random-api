@@ -17,4 +17,14 @@ export default async function handler(req, res) {
   );
 
   return res.json(images);
+
+const images = data.filter(file =>
+  /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name)
+);
+
+const random = images[Math.floor(Math.random() * images.length)];
+
+return res.status(200).json({
+  image: random.download_url
+});
 }
