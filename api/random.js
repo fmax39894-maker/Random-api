@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   const OWNER = "fmax39894-maker";
-  const REPO = "Tele-botx";
+  const REPO = "Random-api";
 
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents`;
 
